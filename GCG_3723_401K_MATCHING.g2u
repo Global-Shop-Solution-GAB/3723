@@ -1,0 +1,285 @@
+Program.Sub.ScreenSU.Start
+gui.SS_Form1..create
+gui.SS_Form1..caption("401k Matching")
+gui.SS_Form1..size(4135,1825)
+gui.SS_Form1..minx(0)
+gui.SS_Form1..miny(0)
+gui.SS_Form1..position(0,0)
+gui.SS_Form1..event(unload,ss_form1_unload)
+gui.SS_Form1..alwaysontop(False)
+gui.SS_Form1..fontname("Arial")
+gui.SS_Form1..fontsize(8)
+gui.SS_Form1..forecolor(0)
+gui.SS_Form1..fontstyle(,,,,)
+gui.SS_Form1..BackColor(-2147483633)
+gui.SS_Form1..controlbox(True)
+gui.SS_Form1..maxbutton(False)
+gui.SS_Form1..minbutton(False)
+gui.SS_Form1..mousepointer(0)
+gui.SS_Form1..moveable(True)
+gui.SS_Form1..sizeable(False)
+gui.SS_Form1..ShowInTaskBar(True)
+gui.SS_Form1..titlebar(True)
+gui.SS_Form1.lbl_dtpStart.create(label,"Start Date",True,1800,200,1,100,135,True,0,Arial,8,-2147483633,0)
+gui.SS_Form1.lbl_dtpStart.defaultvalue("")
+gui.SS_Form1.lbl_dtpStart.controlgroup(0)
+gui.SS_Form1.dtpStart.create(datepicker)
+gui.SS_Form1.dtpStart.visible(True)
+gui.SS_Form1.dtpStart.size(1800,345)
+gui.SS_Form1.dtpStart.zorder(0)
+gui.SS_Form1.dtpStart.position(100,335)
+gui.SS_Form1.dtpStart.enabled(True)
+gui.SS_Form1.dtpStart.checkbox(False)
+gui.SS_Form1.dtpStart.defaultvalue("")
+gui.SS_Form1.dtpStart.controlgroup(0)
+gui.SS_Form1.lbl_dtpEnd.create(label,"End Date",True,1800,200,1,1985,135,True,0,Arial,8,-2147483633,0)
+gui.SS_Form1.lbl_dtpEnd.defaultvalue("")
+gui.SS_Form1.lbl_dtpEnd.controlgroup(0)
+gui.SS_Form1.dtpEnd.create(datepicker)
+gui.SS_Form1.dtpEnd.visible(True)
+gui.SS_Form1.dtpEnd.size(1800,345)
+gui.SS_Form1.dtpEnd.zorder(0)
+gui.SS_Form1.dtpEnd.position(1985,335)
+gui.SS_Form1.dtpEnd.enabled(True)
+gui.SS_Form1.dtpEnd.checkbox(False)
+gui.SS_Form1.dtpEnd.defaultvalue("")
+gui.SS_Form1.dtpEnd.controlgroup(0)
+gui.SS_Form1.cmdPrint.create(button)
+gui.SS_Form1.cmdPrint.caption("Print")
+gui.SS_Form1.cmdPrint.visible(True)
+gui.SS_Form1.cmdPrint.size(1000,360)
+gui.SS_Form1.cmdPrint.zorder(0)
+gui.SS_Form1.cmdPrint.position(100,850)
+gui.SS_Form1.cmdPrint.enabled(True)
+gui.SS_Form1.cmdPrint.fontname("Arial")
+gui.SS_Form1.cmdPrint.fontsize(8)
+gui.SS_Form1.cmdPrint.event(click,cmdprint_click)
+gui.SS_Form1.cmdPrint.defaultvalue("")
+gui.SS_Form1.cmdPrint.controlgroup(0)
+gui.SS_Form1.dtpStart.tabstop(true)
+gui.SS_Form1.dtpStart.tabindex(1)
+gui.SS_Form1.dtpEnd.tabstop(true)
+gui.SS_Form1.dtpEnd.tabindex(2)
+gui.SS_Form1.cmdPrint.tabstop(true)
+gui.SS_Form1.cmdPrint.tabindex(3)
+
+
+Program.Sub.ScreenSU.End
+
+Program.Sub.Preflight.Start
+
+Variable.UDT.uMatching.Define("SOCIAL_SECURITY_NO",String,SOCIAL_SECURITY_NO)
+Variable.UDT.uMatching.Define("FULL_NAME",String,NAME)
+Variable.UDT.uMatching.Define("FIRST_NAME",String)
+Variable.UDT.uMatching.Define("MTD_GR_PAY",Float,GROSSPAY)
+Variable.UDT.uMatching.Define("401K_DED",Float,EMPLOYEE_AMT)
+Variable.UDT.uMatching.Define("CO-MATCH",Float,COMPANY_AMT)
+Variable.UDT.uMatching.Define("LOAN_PMT",Float,LOAN)
+Variable.UDT.uMatching.Define("TOTLHRS",Float,TOTLHRS)
+Variable.UDT.uMatching.Define("BIRUNID",Long,BIRUNID)
+Variable.uGlobal.uMatching.Declare("uMatching")
+Program.Sub.Preflight.End
+
+Program.Sub.Main.Start
+F.Intrinsic.Control.SetErrorHandler("Main_Err")
+F.Intrinsic.Control.ClearErrors
+
+V.Local.sError.Declare(String)
+
+'SAS
+'4/25/16
+
+F.ODBC.Connection!Con.OpenConnection(V.Ambient.PDSN,V.Ambient.PUser,V.Ambient.PPass)
+
+Gui.SS_Form1..Show
+
+F.Intrinsic.Control.ExitSub
+
+F.Intrinsic.Control.Label("Main_Err")
+F.Intrinsic.Control.If(V.Ambient.ErrorNumber,<>,0)
+	Function.Intrinsic.String.Concat("Project: GCG_3723_401K_MATCHING.gas",V.Ambient.Newline,V.Ambient.Newline,"Subroutine: ",V.Ambient.CurrentSubroutine,V.Ambient.NewLine,"Error Occurred ",V.Ambient.ErrorNumber," with description ",V.Ambient.ErrorDescription,V.Local.sError)
+	F.Intrinsic.UI.Msgbox(V.Local.sError)
+	F.Intrinsic.Control.CallSub(Ss_form1_unload)
+Function.Intrinsic.Control.EndIf
+
+
+Program.Sub.Main.End
+
+program.sub.ss_form1_unload.start
+F.Intrinsic.Control.SetErrorHandler("ss_form1_unload_Err")
+F.Intrinsic.Control.ClearErrors
+
+V.Local.sError.Declare(String)
+
+F.ODBC.Connection!Con.Close
+F.Intrinsic.Control.End
+
+F.Intrinsic.Control.ExitSub
+
+F.Intrinsic.Control.Label("ss_form1_unload_Err")
+F.Intrinsic.Control.If(V.Ambient.ErrorNumber,<>,0)
+	Function.Intrinsic.String.Concat("Project: GCG_3723_401K_MATCHING.gas",V.Ambient.Newline,V.Ambient.Newline,"Subroutine: ",V.Ambient.CurrentSubroutine,V.Ambient.NewLine,"Error Occurred ",V.Ambient.ErrorNumber," with description ",V.Ambient.ErrorDescription,V.Local.sError)
+	F.Intrinsic.UI.Msgbox(V.Local.sError)
+	F.Intrinsic.Control.End
+Function.Intrinsic.Control.EndIf
+
+
+program.sub.ss_form1_unload.end
+
+program.sub.cmdprint_click.start
+F.Intrinsic.Control.SetErrorHandler("cmdprint_click_Err")
+F.Intrinsic.Control.ClearErrors
+
+V.Local.sError.Declare(String)
+V.Local.sSQL.Declare(String)
+V.Local.iCount.Declare(Long)
+V.Local.sName.Declare(String)
+V.Local.iBIRUNID.Declare(Long)
+V.Local.iLog.Declare(Long)
+V.Local.iReportID.Declare(Long)
+V.Local.sParamName.Declare(String)
+V.Local.sParamValue.Declare(String)
+V.Local.sSocialSecurityNumber.Declare(String)
+
+'check to see if Date range is not backwards
+F.Intrinsic.Control.If(V.Screen.SS_Form1!dtpStart.Value,>,V.Screen.SS_Form1!dtpEnd.Value)
+	'start is after end so stop and notify
+	F.Intrinsic.UI.Msgbox("Start Date is after End Date, please fix your date range.")
+	F.Intrinsic.Control.ExitSub
+F.Intrinsic.Control.EndIf
+
+Gui.SS_Form1..Visible(FALSE)
+
+F.Global.BI.GetRunID(V.Local.iBIRUNID)
+F.Global.BI.GetIDFromName("GCG_3723_MATCHING.rpt",V.Local.iReportID)
+F.Global.BI.StartLogging(V.Local.iBIRUNID,V.Local.iReportID,-1,"",V.Local.iLog)
+'start gathering information for the report and set it into the custom table
+'Columns: Emp-Num, SSN, First Name, Last Name, Gross Pay, 401k Ded, Co-Match, Pr+Int, Princ, Interest, Check-Date, Ck-Num
+
+V.uGlobal.uMatching.Redim(-1,-1)
+V.Local.iCount.Set(0)
+F.ODBC.Connection!Con.OpenLocalRecordsetRO("rstEmp","SELECT EMPLOYEE, SOC_SEC_ENC, NAME FROM V_EMPLOYEE_MSTR ORDER BY EMPLOYEE ASC")
+
+
+
+F.Intrinsic.Control.DoUntil(V.ODBC.Con!rstEmp.EOF,=,True)
+	F.Intrinsic.Control.If(V.uGlobal.uMatching.UBound,=,-1)
+		V.uGlobal.uMatching.Redim(0,0)
+	F.Intrinsic.Control.Else
+		V.uGlobal.uMatching.RedimPreserve(0,V.Local.iCount)
+	F.Intrinsic.Control.EndIf
+
+	V.Local.sSQL.Set("SELECT  ISNULL(SUM(REG_DOLLARS_1) + SUM(OT_DOLLARS_1) + SUM(DBL_DOLLARS_1) + SUM(REG_DOLLARS_2) + SUM(OT_DOLLARS_2) + SUM(DBL_DOLLARS_2) + SUM(REG_DOLLARS_3) + SUM(OT_DOLLARS_3) + SUM(DBL_DOLLARS_3),0) AS GROSSPAY,  ISNULL(SUM(HOURS_R_1) + SUM(HOURS_O_1) + SUM(HOURS_D_1) + SUM(HOURS_R_2) + SUM(HOURS_O_2) + SUM(HOURS_D_2) + SUM(HOURS_R_3) + SUM(HOURS_O_3) + SUM(HOURS_D_3),0) AS TOTLHRS FROM V_PAY_HIST_EARN ")
+	F.Intrinsic.String.Build("{0} WHERE DATE_HISTORY BETWEEN '{1}' AND '{2}' AND EMPLOYEE = '{3}' GROUP BY EMPLOYEE ORDER BY EMPLOYEE ASC ",V.Local.sSQL,V.Screen.SS_Form1!dtpStart.Value.PervasiveDate,v.Screen.SS_Form1!dtpEnd.Value.PervasiveDate,V.ODBC.Con!rstEmp.FieldValTrim!EMPLOYEE,v.Local.sSQL)
+	F.ODBC.Connection!Con.OpenLocalRecordsetRO("rstPay",V.Local.sSQL)
+
+	V.Local.sSQL.Set("SELECT  ISNULL(SUM(EMPLOYEE_AMT),0) AS EMPLOYEE_AMT, ISNULL(SUM(COMPANY_AMT),0) AS COMPANY_AMT  FROM V_PAYROLL_401K ")
+	f.Intrinsic.String.Build("{0} WHERE DATE_MATCH BETWEEN '{1}' AND '{2}' AND EMPLOYEE = '{3}'  ",v.Local.sSQL,v.Screen.SS_Form1!dtpStart.Value.PervasiveDate,v.Screen.SS_Form1!dtpEnd.Value.PervasiveDate,V.ODBC.Con!rstEmp.FieldValTrim!EMPLOYEE,v.Local.sSQL)
+	F.ODBC.Connection!Con.OpenLocalRecordsetRO("rst401",V.Local.sSQL)
+
+	V.Local.sSQL.Set("SELECT  ISNULL(SUM(DEDUCT_8) + SUM(DEDUCT_9),0) AS LOAN FROM V_PAY_HIST_DED")
+	f.Intrinsic.String.Build("{0} WHERE DATE_HISTORY BETWEEN '{1}' AND '{2}' AND EMPLOYEE = '{3}' ",v.Local.sSQL,v.Screen.SS_Form1!dtpStart.Value.PervasiveDate,v.Screen.SS_Form1!dtpEnd.Value.PervasiveDate,V.ODBC.Con!rstEmp.FieldValTrim!EMPLOYEE,v.Local.sSQL)
+	F.ODBC.Connection!Con.OpenLocalRecordsetRO("rstDed",V.Local.sSQL)
+
+	F.Intrinsic.Control.If(V.ODBC.Con!rstPay.EOF,=,False)
+		V.uGlobal.uMatching(V.Local.iCount)!MTD_GR_PAY.Set(V.ODBC.Con!rstPay.FieldValTrim!GROSSPAY)
+		V.uGlobal.uMatching(V.Local.iCount)!TOTLHRS.Set(V.ODBC.Con!rstPay.FieldValTrim!TOTLHRS)
+	F.Intrinsic.Control.Else
+		V.uGlobal.uMatching(V.Local.iCount)!MTD_GR_PAY.Set(0)
+		V.uGlobal.uMatching(V.Local.iCount)!TOTLHRS.Set(0)
+	F.Intrinsic.Control.EndIf
+
+	F.Intrinsic.Control.If(V.ODBC.Con!rst401.EOF,=,False)
+		V.uGlobal.uMatching(V.Local.iCount)!401K_DED.Set(V.ODBC.Con!rst401.FieldValTrim!EMPLOYEE_AMT)
+		V.uGlobal.uMatching(V.Local.iCount)!CO-MATCH.Set(V.ODBC.Con!rst401.FieldValTrim!COMPANY_AMT)
+	F.Intrinsic.Control.Else
+		V.uGlobal.uMatching(V.Local.iCount)!401K_DED.Set(0)
+		V.uGlobal.uMatching(V.Local.iCount)!CO-MATCH.Set(0)
+	F.Intrinsic.Control.EndIf
+
+	F.Intrinsic.Control.If(V.ODBC.Con!rstDed.EOF,=,False)
+		V.uGlobal.uMatching(V.Local.iCount)!LOAN_PMT.Set(V.ODBC.Con!rstDed.FieldValTrim!LOAN)
+	F.Intrinsic.Control.Else
+		V.uGlobal.uMatching(V.Local.iCount)!LOAN_PMT.Set(0)
+	F.Intrinsic.Control.EndIf
+
+	V.uGlobal.uMatching(V.Local.iCount)!BIRUNID.Set(V.Local.iBIRUNID)
+	V.uGlobal.uMatching(V.Local.iCount)!FULL_NAME.Set(V.ODBC.Con!rstEmp.FieldValTrim!NAME)
+	
+	F.Global.Encryption.Decrypt(V.ODBC.Con!rstEmp.FieldVal!SOC_SEC_ENC,V.Local.sSocialSecurityNumber)
+	V.uGlobal.uMatching(V.Local.iCount)!SOCIAL_SECURITY_NO.Set(V.Local.sSocialSecurityNumber)
+
+	F.Intrinsic.Math.Add(V.Local.iCount,1,V.Local.iCount)
+
+	F.ODBC.Con!rstEmp.MoveNext
+
+	F.ODBC.Con!rstDed.Close
+	F.ODBC.Con!rst401.Close
+	F.ODBC.Con!rstPay.Close
+F.Intrinsic.Control.Loop
+
+F.ODBC.Con!rstEmp.Close
+
+
+F.Intrinsic.Control.If(V.uGlobal.uMatching.UBound,<>,-1)
+	F.Intrinsic.Control.For(V.Local.iCount,V.uGlobal.uMatching.LBound,V.uGlobal.uMatching.UBound,1)
+		'cycle through the udt and split the first, last , and middle names appart.
+		'their name is formatted Last, First M.
+'		F.Intrinsic.String.Split(V.uGlobal.uMatching(V.Local.iCount)!FULL_NAME,", ",V.Local.sName)
+'		V.Local.sName.RedimPreserve(0,1)
+		'split the first name away from the middle
+'		F.Intrinsic.String.Split(V.Local.sName(1)," ",V.Local.sName)
+'		V.Local.sName.RedimPreserve(0,1)
+'		V.uGlobal.uMatching(v.Local.iCount)!FIRST_NAME.Set(V.Local.sName(0).Trim)
+'		V.Local.sName.RedimPreserve(0,0)
+'		V.Local.sName.Set("")
+		V.uGlobal.uMatching(V.Local.iCount)!FIRST_NAME.Set(V.uGlobal.uMatching(V.Local.iCount)!FULL_NAME)
+	F.Intrinsic.Control.Next(V.Local.iCount)
+
+
+	'save to custom table for report viewing
+	F.Intrinsic.Variable.SetUDTFieldReference(V.uGlobal.uMatching!FIRST_NAME,"FIRST_NAME")
+	F.Intrinsic.Variable.SetUDTFieldReference(V.uGlobal.uMatching!FULL_NAME,"")
+	F.Intrinsic.Variable.UDTUnFlagAll(V.uGlobal.uMatching)
+	F.Intrinsic.Variable.UDTMultiFlag(V.uGlobal.uMatching!MTD_GR_PAY,0)
+	F.Intrinsic.Variable.UDTDeleteFlagged(V.uGlobal.uMatching)
+	F.Intrinsic.Variable.UDTMultiQuickSort(V.uGlobal.uMatching!FIRST_NAME,False)
+	F.ODBC.Connection!Con.OpenLocalRecordsetRW("rst","GCG_3723_MATCHING")
+	F.Intrinsic.Variable.SaveUDTToRecordSet("Con","rst","v.uGlobal.uMatching")
+	F.ODBC.Con!rst.Close
+
+F.Intrinsic.Control.EndIf
+
+V.Local.sParamName.Set("Start_Date*!*End_Date")
+F.Intrinsic.String.Build("{0}*!*{1}",V.Screen.SS_Form1!dtpStart.Value,V.Screen.SS_Form1!dtpEnd.Value,V.Local.sParamValue)
+F.Global.BI.StopLogging(V.Local.iLog)
+
+F.Global.BI.RunReportPreProcessor(V.Local.iBIRUNID,V.Local.iLog,V.Local.sParamName,V.Local.sParamValue,"",-1,False,"",-1,"",-1,"","",V.Local.iLog)
+
+
+F.Intrinsic.Control.ExitSub
+
+F.Intrinsic.Control.Label("cmdprint_click_Err")
+F.Intrinsic.Control.If(V.Ambient.ErrorNumber,<>,0)
+	Function.Intrinsic.String.Concat("Project: GCG_3723_401K_MATCHING.gas",V.Ambient.Newline,V.Ambient.Newline,"Subroutine: ",V.Ambient.CurrentSubroutine,V.Ambient.NewLine,"Error Occurred ",V.Ambient.ErrorNumber," with description ",V.Ambient.ErrorDescription,V.Local.sError)
+	F.Intrinsic.UI.Msgbox(V.Local.sError)
+	F.Intrinsic.Control.CallSub(Ss_form1_unload)
+Function.Intrinsic.Control.EndIf
+
+
+program.sub.cmdprint_click.end
+
+Program.Sub.Comments.Start
+${$0$}$GCG_3723_401K_MATCHING$}$SS1$}$4/25/2016
+${$3$}$0$}$$}$-1$}$-1$}$$}$1/1/1900$}$401K MATCHING REPORT
+
+Columns: SSN, First Name, MTD Gr Pay, 401k Ded, Co-Match, Loan Pmt, Hours
+Program.Sub.Comments.End
+Program.Sub.ScreenSS.Start
+SS_Form1{{CAPTION::401k Matching
+SS_Form1.CTRL{{NAME::dtpStart\\TYPE::6\\CAPTION::Start Date\\TABSTOP::1\\GROUP::1\\BROWSER::0\\SIZE::1
+SS_Form1.CTRL{{NAME::dtpEnd\\TYPE::6\\CAPTION::End Date\\TABSTOP::2\\GROUP::1\\BROWSER::0\\SIZE::1
+SS_Form1.CTRL{{NAME::cmdPrint\\TYPE::5\\CAPTION::Print\\TABSTOP::3\\GROUP::-1\\BROWSER::0\\SIZE::1
+
+Program.Sub.ScreenSS.End
+
