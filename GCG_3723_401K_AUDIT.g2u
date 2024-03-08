@@ -1,0 +1,438 @@
+Program.Sub.ScreenSU.Start
+gui.SS_Form1..create
+gui.SS_Form1..caption("401k Audit Report")
+gui.SS_Form1..size(4135,1825)
+gui.SS_Form1..minx(0)
+gui.SS_Form1..miny(0)
+gui.SS_Form1..position(0,0)
+gui.SS_Form1..event(unload,ss_form1_unload)
+gui.SS_Form1..alwaysontop(False)
+gui.SS_Form1..fontname("Arial")
+gui.SS_Form1..fontsize(8)
+gui.SS_Form1..forecolor(0)
+gui.SS_Form1..fontstyle(,,,,)
+gui.SS_Form1..BackColor(-2147483633)
+gui.SS_Form1..controlbox(True)
+gui.SS_Form1..maxbutton(False)
+gui.SS_Form1..minbutton(False)
+gui.SS_Form1..mousepointer(0)
+gui.SS_Form1..moveable(True)
+gui.SS_Form1..sizeable(False)
+gui.SS_Form1..ShowInTaskBar(True)
+gui.SS_Form1..titlebar(True)
+gui.SS_Form1.lbl_dtpStart.create(label,"Start Date",True,1800,200,1,100,135,True,0,Arial,8,-2147483633,0)
+gui.SS_Form1.lbl_dtpStart.defaultvalue("")
+gui.SS_Form1.lbl_dtpStart.controlgroup(0)
+gui.SS_Form1.dtpStart.create(datepicker)
+gui.SS_Form1.dtpStart.visible(True)
+gui.SS_Form1.dtpStart.size(1800,345)
+gui.SS_Form1.dtpStart.zorder(0)
+gui.SS_Form1.dtpStart.position(100,335)
+gui.SS_Form1.dtpStart.enabled(True)
+gui.SS_Form1.dtpStart.checkbox(False)
+gui.SS_Form1.dtpStart.defaultvalue("")
+gui.SS_Form1.dtpStart.controlgroup(0)
+gui.SS_Form1.lbl_dtpEnd.create(label,"End Date",True,1800,200,1,1985,135,True,0,Arial,8,-2147483633,0)
+gui.SS_Form1.lbl_dtpEnd.defaultvalue("")
+gui.SS_Form1.lbl_dtpEnd.controlgroup(0)
+gui.SS_Form1.dtpEnd.create(datepicker)
+gui.SS_Form1.dtpEnd.visible(True)
+gui.SS_Form1.dtpEnd.size(1800,345)
+gui.SS_Form1.dtpEnd.zorder(0)
+gui.SS_Form1.dtpEnd.position(1985,335)
+gui.SS_Form1.dtpEnd.enabled(True)
+gui.SS_Form1.dtpEnd.checkbox(False)
+gui.SS_Form1.dtpEnd.defaultvalue("")
+gui.SS_Form1.dtpEnd.controlgroup(0)
+gui.SS_Form1.cmdPrint.create(button)
+gui.SS_Form1.cmdPrint.caption("Print")
+gui.SS_Form1.cmdPrint.visible(True)
+gui.SS_Form1.cmdPrint.size(1000,360)
+gui.SS_Form1.cmdPrint.zorder(0)
+gui.SS_Form1.cmdPrint.position(100,850)
+gui.SS_Form1.cmdPrint.enabled(True)
+gui.SS_Form1.cmdPrint.fontname("Arial")
+gui.SS_Form1.cmdPrint.fontsize(8)
+gui.SS_Form1.cmdPrint.event(click,cmdprint_click)
+gui.SS_Form1.cmdPrint.defaultvalue("")
+gui.SS_Form1.cmdPrint.controlgroup(0)
+gui.SS_Form1.dtpStart.tabstop(true)
+gui.SS_Form1.dtpStart.tabindex(1)
+gui.SS_Form1.dtpEnd.tabstop(true)
+gui.SS_Form1.dtpEnd.tabindex(2)
+gui.SS_Form1.cmdPrint.tabstop(true)
+gui.SS_Form1.cmdPrint.tabindex(3)
+
+
+Program.Sub.ScreenSU.End
+
+Program.Sub.Preflight.Start
+
+Variable.UDT.uAudit.Define("BIRUNID",String,BIRUNID)
+Variable.UDT.uAudit.Define("EMPLOYEE",String,EMPLOYEE)
+Variable.UDT.uAudit.Define("FULL_NAME",String,NAME)
+Variable.UDT.uAudit.Define("FIRST_NAME",String)
+Variable.UDT.uAudit.Define("LAST_NAME",String)
+Variable.UDT.uAudit.Define("GROSSPAY",Float,GROSSPAY)
+Variable.UDT.uAudit.Define("EMPLOYEE_AMT",Float,EMPLOYEE_AMT)
+Variable.UDT.uAudit.Define("COMPANY_AMT",Float,COMPANY_AMT)
+Variable.UDT.uAudit.Define("LOAN",Float,LOAN)
+Variable.UDT.uAudit.Define("PRINC",Float,PRINC)
+Variable.UDT.uAudit.Define("INTEREST",Float,INTEREST)
+Variable.UDT.uAudit.Define("DATE_CHECK",Date,DATE_CHECK)
+Variable.UDT.uAudit.Define("SSN",String,SOCIAL_SECURITY_NO)
+Variable.UDT.uAudit.Define("CHECK_NUM",String,CHECK_NUMBER)
+Variable.uGlobal.uAudit.Declare("uAudit")
+Program.Sub.Preflight.End
+
+Program.Sub.Main.Start
+F.Intrinsic.Control.SetErrorHandler("Main_Err")
+F.Intrinsic.Control.ClearErrors
+
+V.Local.sError.Declare(String)
+
+'SAS
+'4/25/16
+
+F.ODBC.Connection!Con.OpenConnection(V.Ambient.PDSN,V.Ambient.PUser,V.Ambient.PPass)
+
+Gui.SS_Form1..Show
+
+F.Intrinsic.Control.ExitSub
+
+F.Intrinsic.Control.Label("Main_Err")
+F.Intrinsic.Control.If(V.Ambient.ErrorNumber,<>,0)
+	Function.Intrinsic.String.Concat("Project: GCG_3723_401K_AUDIT.gas",V.Ambient.Newline,V.Ambient.Newline,"Subroutine: ",V.Ambient.CurrentSubroutine,V.Ambient.NewLine,"Error Occurred ",V.Ambient.ErrorNumber," with description ",V.Ambient.ErrorDescription,V.Local.sError)
+	F.Intrinsic.UI.Msgbox(V.Local.sError)
+	F.Intrinsic.Control.CallSub(Ss_form1_unload)
+Function.Intrinsic.Control.EndIf
+
+
+Program.Sub.Main.End
+
+program.sub.ss_form1_unload.start
+F.Intrinsic.Control.SetErrorHandler("ss_form1_unload_Err")
+F.Intrinsic.Control.ClearErrors
+
+V.Local.sError.Declare(String)
+
+f.ODBC.Connection!Con.Close
+F.Intrinsic.Control.End
+
+F.Intrinsic.Control.ExitSub
+
+F.Intrinsic.Control.Label("ss_form1_unload_Err")
+F.Intrinsic.Control.If(V.Ambient.ErrorNumber,<>,0)
+	Function.Intrinsic.String.Concat("Project: GCG_3723_401K_AUDIT.gas",V.Ambient.Newline,V.Ambient.Newline,"Subroutine: ",V.Ambient.CurrentSubroutine,V.Ambient.NewLine,"Error Occurred ",V.Ambient.ErrorNumber," with description ",V.Ambient.ErrorDescription,V.Local.sError)
+	F.Intrinsic.UI.Msgbox(V.Local.sError)
+	F.Intrinsic.Control.End
+Function.Intrinsic.Control.EndIf
+
+
+program.sub.ss_form1_unload.end
+
+program.sub.cmdprint_click.start
+F.Intrinsic.Control.SetErrorHandler("cmdprint_click_Err")
+F.Intrinsic.Control.ClearErrors
+
+V.Local.sError.Declare(String)
+V.Local.sSQL.Declare(String)
+V.Local.iCount.Declare(Long)
+V.Local.sName.Declare(String)
+V.Local.iBIRUNID.Declare(Long)
+V.Local.iLog.Declare(Long)
+V.Local.iReportID.Declare(Long)
+V.Local.sParamName.Declare(String)
+V.Local.sParamValue.Declare(String)
+V.Local.dDefault.Declare(Date)
+V.Local.ByteArray.Declare(ByteArray)
+V.Local.sSocialSecurityNumber.Declare(String)
+
+'check to see if Date range is not backwards
+F.Intrinsic.Control.If(V.Screen.SS_Form1!dtpStart.Value,>,V.Screen.SS_Form1!dtpEnd.Value)
+	'start is after end so stop and notify
+	F.Intrinsic.UI.Msgbox("Start Date is after End Date, please fix your date range.")
+	F.Intrinsic.Control.ExitSub
+F.Intrinsic.Control.EndIf
+
+Gui.SS_Form1..Visible(FALSE)
+
+F.Global.BI.GetRunID(V.Local.iBIRUNID)
+F.Global.BI.GetIDFromName("GCG_3723_401K_AUDIT.rpt",V.Local.iReportID)
+F.Global.BI.StartLogging(V.Local.iBIRUNID,V.Local.iReportID,-1,"",V.Local.iLog)
+'start gathering information for the report and set it into the custom table
+'Columns: Emp-Num, SSN, First Name, Last Name, Gross Pay, 401k Ded, Co-Match, Pr+Int, Princ, Interest, Check-Date, Ck-Num
+F.Intrinsic.Date.ConvertDString("01/01/1900","mm/dd/YYYY",V.Local.dDefault)
+V.uGlobal.uAudit.Redim(-1,-1)
+V.Local.iCount.Set(0)
+F.ODBC.Connection!Con.OpenLocalRecordsetRO("rstEmp","SELECT EMPLOYEE, SOC_SEC_ENC, NAME FROM V_EMPLOYEE_MSTR  ORDER BY EMPLOYEE ASC")
+F.Intrinsic.Control.DoUntil(V.ODBC.Con!rstEmp.EOF,=,True)
+	F.Intrinsic.Control.If(V.uGlobal.uAudit.UBound,=,-1)
+		V.uGlobal.uAudit.Redim(0,0)
+	F.Intrinsic.Control.Else
+		V.uGlobal.uAudit.RedimPreserve(0,V.Local.iCount)
+	F.Intrinsic.Control.EndIf
+
+	V.Local.sSQL.Set("SELECT ISNULL(SUM(REG_DOLLARS_1) + SUM(OT_DOLLARS_1) + SUM(DBL_DOLLARS_1) + SUM(REG_DOLLARS_2) + SUM(OT_DOLLARS_2) + SUM(DBL_DOLLARS_2) + SUM(REG_DOLLARS_3) + SUM(OT_DOLLARS_3) + SUM(DBL_DOLLARS_3),0) AS GROSSPAY, ISNULL(CHECK_NUMBER,' ') AS CHECK_NUMBER, ISNULL(DATE_CHECK,'01/01/1900') AS DATE_CHECK FROM V_PAY_HIST_EARN ")
+	F.Intrinsic.String.Build("{0} WHERE DATE_HISTORY BETWEEN '{1}' AND '{2}' AND EMPLOYEE = '{3}' GROUP BY EMPLOYEE, CHECK_NUMBER, DATE_CHECK ORDER BY EMPLOYEE ASC ",V.Local.sSQL,V.Screen.SS_Form1!dtpStart.Value.PervasiveDate,v.Screen.SS_Form1!dtpEnd.Value.PervasiveDate,V.ODBC.Con!rstEmp.FieldValTrim!EMPLOYEE,v.Local.sSQL)
+	F.ODBC.Connection!Con.OpenLocalRecordsetRO("rstPay",V.Local.sSQL)
+	f.Intrinsic.Control.DoUntil(v.ODBC.Con!rstPay.EOF,=,True)
+		F.Intrinsic.Control.If(V.uGlobal.uAudit.UBound,=,-1)
+			V.uGlobal.uAudit.Redim(0,0)
+		F.Intrinsic.Control.Else
+			V.uGlobal.uAudit.RedimPreserve(0,V.Local.iCount)
+		F.Intrinsic.Control.EndIf
+	
+	
+		V.Local.sSQL.Set("SELECT  ISNULL(SUM(EMPLOYEE_AMT),0) AS EMPLOYEE_AMT, ISNULL(SUM(COMPANY_AMT),0) AS COMPANY_AMT FROM V_PAYROLL_401K ")
+		f.Intrinsic.String.Build("{0} WHERE DATE_MATCH BETWEEN '{1}' AND '{2}' AND EMPLOYEE = '{3}' AND CHECK_NUM = '{4}'",v.Local.sSQL,v.Screen.SS_Form1!dtpStart.Value.PervasiveDate,v.Screen.SS_Form1!dtpEnd.Value.PervasiveDate,V.ODBC.Con!rstEmp.FieldValTrim!EMPLOYEE,v.ODBC.Con!rstPay.FieldValTrim!CHECK_NUMBER,v.Local.sSQL)
+		F.ODBC.Connection!Con.OpenLocalRecordsetRO("rst401",V.Local.sSQL)
+		V.Local.sSQL.Set("SELECT  ISNULL(SUM(DEDUCT_8) + SUM(DEDUCT_9),0) AS LOAN, ISNULL(SUM(DEDUCT_8),0) AS PRINC, ISNULL(SUM(DEDUCT_9),0) AS INTEREST FROM V_PAY_HIST_DED ")
+		f.Intrinsic.String.Build("{0} WHERE DATE_HISTORY BETWEEN '{1}' AND '{2}' AND EMPLOYEE = '{3}' AND CHECK_NUMBER = '{4}' ",v.Local.sSQL,v.Screen.SS_Form1!dtpStart.Value.PervasiveDate,v.Screen.SS_Form1!dtpEnd.Value.PervasiveDate,V.ODBC.Con!rstEmp.FieldValTrim!EMPLOYEE,v.ODBC.Con!rstPay.FieldValTrim!CHECK_NUMBER,v.Local.sSQL)
+		F.ODBC.Connection!Con.OpenLocalRecordsetRO("rstDed",V.Local.sSQL)
+
+		V.uGlobal.uAudit(v.Local.iCount)!BIRUNID.Set(V.Local.iBIRUNID)
+
+		F.Intrinsic.Control.If(V.ODBC.Con!rstPay.EOF,=,False)
+			V.uGlobal.uAudit(v.Local.iCount)!CHECK_NUM.Set(V.ODBC.Con!rstPay.FieldValTrim!CHECK_NUMBER)
+			V.uGlobal.uAudit(V.Local.iCount)!DATE_CHECK.Set(V.ODBC.Con!rstPay.FieldValTrim!DATE_CHECK)
+			V.uGlobal.uAudit(V.Local.iCount)!GROSSPAY.Set(V.ODBC.Con!rstPay.FieldValTrim!GROSSPAY)
+		F.Intrinsic.Control.Else
+			V.uGlobal.uAudit(v.Local.iCount)!CHECK_NUM.Set("")
+			V.uGlobal.uAudit(V.Local.iCount)!DATE_CHECK.Set(V.Local.dDefault)
+			V.uGlobal.uAudit(V.Local.iCount)!GROSSPAY.Set(0)
+		F.Intrinsic.Control.EndIf
+	
+		F.Intrinsic.Control.If(V.ODBC.Con!rst401.EOF,=,False)
+			V.uGlobal.uAudit(V.Local.iCount)!COMPANY_AMT.Set(V.ODBC.Con!rst401.FieldValTrim!COMPANY_AMT)
+			V.uGlobal.uAudit(V.Local.iCount)!EMPLOYEE_AMT.Set(V.ODBC.Con!rst401.FieldValTrim!EMPLOYEE_AMT)
+		F.Intrinsic.Control.Else
+			V.uGlobal.uAudit(V.Local.iCount)!COMPANY_AMT.Set(0)
+			V.uGlobal.uAudit(V.Local.iCount)!EMPLOYEE_AMT.Set(0)
+		F.Intrinsic.Control.EndIf
+	
+		F.Intrinsic.Control.If(V.ODBC.Con!rstDed.EOF,=,False)
+			V.uGlobal.uAudit(V.Local.iCount)!INTEREST.Set(V.ODBC.Con!rstDed.FieldValTrim!INTEREST)
+			V.uGlobal.uAudit(V.Local.iCount)!LOAN.Set(V.ODBC.Con!rstDed.FieldValTrim!LOAN)
+			V.uGlobal.uAudit(V.Local.iCount)!PRINC.Set(V.ODBC.Con!rstDed.FieldValTrim!PRINC)
+		F.Intrinsic.Control.Else
+			V.uGlobal.uAudit(V.Local.iCount)!INTEREST.Set(0)
+			V.uGlobal.uAudit(V.Local.iCount)!LOAN.Set(0)
+			V.uGlobal.uAudit(V.Local.iCount)!PRINC.Set(0)
+		F.Intrinsic.Control.EndIf
+	
+		V.uGlobal.uAudit(V.Local.iCount)!EMPLOYEE.Set(V.ODBC.Con!rstEmp.FieldValTrim!EMPLOYEE)
+		V.uGlobal.uAudit(V.Local.iCount)!FULL_NAME.Set(V.ODBC.Con!rstEmp.FieldValTrim!NAME)
+		
+		F.Global.Encryption.Decrypt(V.ODBC.Con!rstEmp.FieldVal!SOC_SEC_ENC,V.Local.sSocialSecurityNumber)
+		V.uGlobal.uAudit(V.Local.iCount)!SSN.Set(V.Local.sSocialSecurityNumber)
+	
+		F.Intrinsic.Math.Add(V.Local.iCount,1,V.Local.iCount)
+		F.ODBC.Con!rstDed.Close
+		F.ODBC.Con!rst401.Close
+		f.ODBC.Con!rstPay.MoveNext
+	f.Intrinsic.Control.Loop
+	F.ODBC.Con!rstPay.Close
+	
+	V.Local.sSQL.Set("SELECT  ISNULL(SUM(EMPLOYEE_AMT),0) AS EMPLOYEE_AMT, ISNULL(SUM(COMPANY_AMT),0) AS COMPANY_AMT, ISNULL(CHECK_NUM,' ') AS CHECK_NUMBER FROM V_PAYROLL_401K ")
+	f.Intrinsic.String.Build("{0} WHERE DATE_MATCH BETWEEN '{1}' AND '{2}' AND EMPLOYEE = '{3}' GROUP BY CHECK_NUMBER",v.Local.sSQL,v.Screen.SS_Form1!dtpStart.Value.PervasiveDate,v.Screen.SS_Form1!dtpEnd.Value.PervasiveDate,V.ODBC.Con!rstEmp.FieldValTrim!EMPLOYEE,v.Local.sSQL)
+	
+	F.ODBC.Connection!Con.OpenLocalRecordsetRO("rst401",V.Local.sSQL)
+	f.Intrinsic.Control.DoUntil(v.ODBC.Con!rst401.EOF,=,True)
+		F.Intrinsic.Control.If(V.uGlobal.uAudit.UBound,=,-1)
+			V.uGlobal.uAudit.Redim(0,0)
+		F.Intrinsic.Control.Else
+			V.uGlobal.uAudit.RedimPreserve(0,V.Local.iCount)
+		F.Intrinsic.Control.EndIf
+	
+	
+		V.Local.sSQL.Set("SELECT ISNULL(SUM(REG_DOLLARS_1) + SUM(OT_DOLLARS_1) + SUM(DBL_DOLLARS_1) + SUM(REG_DOLLARS_2) + SUM(OT_DOLLARS_2) + SUM(DBL_DOLLARS_2) + SUM(REG_DOLLARS_3) + SUM(OT_DOLLARS_3) + SUM(DBL_DOLLARS_3),0) AS GROSSPAY, ISNULL(CHECK_NUMBER,' ') AS CHECK_NUMBER, ISNULL(DATE_CHECK,'01/01/1900') AS DATE_CHECK FROM V_PAY_HIST_EARN ")
+		F.Intrinsic.String.Build("{0} WHERE DATE_HISTORY BETWEEN '{1}' AND '{2}' AND EMPLOYEE = '{3}' AND CHECK_NUMBER = '{4}' GROUP BY EMPLOYEE, CHECK_NUMBER, DATE_CHECK ORDER BY EMPLOYEE ASC ",V.Local.sSQL,V.Screen.SS_Form1!dtpStart.Value.PervasiveDate,v.Screen.SS_Form1!dtpEnd.Value.PervasiveDate,V.ODBC.Con!rstEmp.FieldValTrim!EMPLOYEE,V.ODBC.Con!rst401.FieldValTrim!CHECK_NUMBER,v.Local.sSQL)
+		F.ODBC.Connection!Con.OpenLocalRecordsetRO("rstPay",V.Local.sSQL)
+		V.Local.sSQL.Set("SELECT  ISNULL(SUM(DEDUCT_8) + SUM(DEDUCT_9),0) AS LOAN, ISNULL(SUM(DEDUCT_8),0) AS PRINC, ISNULL(SUM(DEDUCT_9),0) AS INTEREST FROM V_PAY_HIST_DED ")
+		f.Intrinsic.String.Build("{0} WHERE DATE_HISTORY BETWEEN '{1}' AND '{2}' AND EMPLOYEE = '{3}' AND CHECK_NUMBER = '{4}' ",v.Local.sSQL,v.Screen.SS_Form1!dtpStart.Value.PervasiveDate,v.Screen.SS_Form1!dtpEnd.Value.PervasiveDate,V.ODBC.Con!rstEmp.FieldValTrim!EMPLOYEE,v.ODBC.Con!rst401.FieldValTrim!CHECK_NUMBER,v.Local.sSQL)
+		F.ODBC.Connection!Con.OpenLocalRecordsetRO("rstDed",V.Local.sSQL)
+
+		V.uGlobal.uAudit(v.Local.iCount)!BIRUNID.Set(V.Local.iBIRUNID)
+
+		F.Intrinsic.Control.If(V.ODBC.Con!rstPay.EOF,=,False)
+			V.uGlobal.uAudit(v.Local.iCount)!CHECK_NUM.Set(V.ODBC.Con!rstPay.FieldValTrim!CHECK_NUMBER)
+			V.uGlobal.uAudit(V.Local.iCount)!DATE_CHECK.Set(V.ODBC.Con!rstPay.FieldValTrim!DATE_CHECK)
+			V.uGlobal.uAudit(V.Local.iCount)!GROSSPAY.Set(V.ODBC.Con!rstPay.FieldValTrim!GROSSPAY)
+		F.Intrinsic.Control.Else
+			V.uGlobal.uAudit(v.Local.iCount)!CHECK_NUM.Set(V.ODBC.Con!rst401.FieldValTrim!CHECK_NUMBER)
+			V.uGlobal.uAudit(V.Local.iCount)!DATE_CHECK.Set(V.Local.dDefault)
+			V.uGlobal.uAudit(V.Local.iCount)!GROSSPAY.Set(0)
+		F.Intrinsic.Control.EndIf
+	
+		F.Intrinsic.Control.If(V.ODBC.Con!rst401.EOF,=,False)
+			V.uGlobal.uAudit(V.Local.iCount)!COMPANY_AMT.Set(V.ODBC.Con!rst401.FieldValTrim!COMPANY_AMT)
+			V.uGlobal.uAudit(V.Local.iCount)!EMPLOYEE_AMT.Set(V.ODBC.Con!rst401.FieldValTrim!EMPLOYEE_AMT)
+		F.Intrinsic.Control.Else
+			V.uGlobal.uAudit(V.Local.iCount)!COMPANY_AMT.Set(0)
+			V.uGlobal.uAudit(V.Local.iCount)!EMPLOYEE_AMT.Set(0)
+		F.Intrinsic.Control.EndIf
+	
+		F.Intrinsic.Control.If(V.ODBC.Con!rstDed.EOF,=,False)
+			V.uGlobal.uAudit(V.Local.iCount)!INTEREST.Set(V.ODBC.Con!rstDed.FieldValTrim!INTEREST)
+			V.uGlobal.uAudit(V.Local.iCount)!LOAN.Set(V.ODBC.Con!rstDed.FieldValTrim!LOAN)
+			V.uGlobal.uAudit(V.Local.iCount)!PRINC.Set(V.ODBC.Con!rstDed.FieldValTrim!PRINC)
+		F.Intrinsic.Control.Else
+			V.uGlobal.uAudit(V.Local.iCount)!INTEREST.Set(0)
+			V.uGlobal.uAudit(V.Local.iCount)!LOAN.Set(0)
+			V.uGlobal.uAudit(V.Local.iCount)!PRINC.Set(0)
+		F.Intrinsic.Control.EndIf
+	
+		V.uGlobal.uAudit(V.Local.iCount)!EMPLOYEE.Set(V.ODBC.Con!rstEmp.FieldValTrim!EMPLOYEE)
+		V.uGlobal.uAudit(V.Local.iCount)!FULL_NAME.Set(V.ODBC.Con!rstEmp.FieldValTrim!NAME)
+	
+		F.Global.Encryption.Decrypt(V.ODBC.Con!rstEmp.FieldVal!SOC_SEC_ENC,V.Local.sSocialSecurityNumber)
+		V.uGlobal.uAudit(V.Local.iCount)!SSN.Set(V.Local.sSocialSecurityNumber)
+	
+		F.Intrinsic.Math.Add(V.Local.iCount,1,V.Local.iCount)
+		F.ODBC.Con!rstDed.Close
+		F.ODBC.Con!rstPay.Close
+		f.ODBC.Con!rst401.MoveNext
+	f.Intrinsic.Control.Loop
+	F.ODBC.Con!rst401.Close
+	
+	V.Local.sSQL.Set("SELECT  ISNULL(SUM(DEDUCT_8) + SUM(DEDUCT_9),0) AS LOAN, ISNULL(SUM(DEDUCT_8),0) AS PRINC, ISNULL(SUM(DEDUCT_9),0) AS INTEREST, ISNULL(CHECK_NUMBER,' ') AS CHECK_NUMBER FROM V_PAY_HIST_DED ")
+	f.Intrinsic.String.Build("{0} WHERE DATE_HISTORY BETWEEN '{1}' AND '{2}' AND EMPLOYEE = '{3}' GROUP BY CHECK_NUMBER",v.Local.sSQL,v.Screen.SS_Form1!dtpStart.Value.PervasiveDate,v.Screen.SS_Form1!dtpEnd.Value.PervasiveDate,V.ODBC.Con!rstEmp.FieldValTrim!EMPLOYEE,v.Local.sSQL)
+	F.ODBC.Connection!Con.OpenLocalRecordsetRO("rstDed",V.Local.sSQL)
+	f.Intrinsic.Control.DoUntil(v.ODBC.Con!rstDed.EOF,=,True)
+		F.Intrinsic.Control.If(V.uGlobal.uAudit.UBound,=,-1)
+			V.uGlobal.uAudit.Redim(0,0)
+		F.Intrinsic.Control.Else
+			V.uGlobal.uAudit.RedimPreserve(0,V.Local.iCount)
+		F.Intrinsic.Control.EndIf
+	
+	
+		V.Local.sSQL.Set("SELECT ISNULL(SUM(REG_DOLLARS_1) + SUM(OT_DOLLARS_1) + SUM(DBL_DOLLARS_1) + SUM(REG_DOLLARS_2) + SUM(OT_DOLLARS_2) + SUM(DBL_DOLLARS_2) + SUM(REG_DOLLARS_3) + SUM(OT_DOLLARS_3) + SUM(DBL_DOLLARS_3),0) AS GROSSPAY, ISNULL(CHECK_NUMBER,' ') AS CHECK_NUMBER, ISNULL(DATE_CHECK,'01/01/1900') AS DATE_CHECK FROM V_PAY_HIST_EARN ")
+		F.Intrinsic.String.Build("{0} WHERE DATE_HISTORY BETWEEN '{1}' AND '{2}' AND EMPLOYEE = '{3}' AND CHECK_NUMBER = '{4}' GROUP BY EMPLOYEE, CHECK_NUMBER, DATE_CHECK ORDER BY EMPLOYEE ASC ",V.Local.sSQL,V.Screen.SS_Form1!dtpStart.Value.PervasiveDate,v.Screen.SS_Form1!dtpEnd.Value.PervasiveDate,V.ODBC.Con!rstEmp.FieldValTrim!EMPLOYEE,V.ODBC.Con!rstDed.FieldValTrim!CHECK_NUMBER,v.Local.sSQL)
+		F.ODBC.Connection!Con.OpenLocalRecordsetRO("rstPay",V.Local.sSQL)
+		V.Local.sSQL.Set("SELECT  ISNULL(SUM(EMPLOYEE_AMT),0) AS EMPLOYEE_AMT, ISNULL(SUM(COMPANY_AMT),0) AS COMPANY_AMT FROM V_PAYROLL_401K ")
+		f.Intrinsic.String.Build("{0} WHERE DATE_MATCH BETWEEN '{1}' AND '{2}' AND EMPLOYEE = '{3}' AND CHECK_NUM = '{4}' ",v.Local.sSQL,v.Screen.SS_Form1!dtpStart.Value.PervasiveDate,v.Screen.SS_Form1!dtpEnd.Value.PervasiveDate,V.ODBC.Con!rstEmp.FieldValTrim!EMPLOYEE,v.ODBC.Con!rstDed.FieldValTrim!CHECK_NUMBER,v.Local.sSQL)
+		F.ODBC.Connection!Con.OpenLocalRecordsetRO("rst401",V.Local.sSQL)
+
+		V.uGlobal.uAudit(v.Local.iCount)!BIRUNID.Set(V.Local.iBIRUNID)
+
+		F.Intrinsic.Control.If(V.ODBC.Con!rstPay.EOF,=,False)
+			V.uGlobal.uAudit(v.Local.iCount)!CHECK_NUM.Set(V.ODBC.Con!rstPay.FieldValTrim!CHECK_NUMBER)
+			V.uGlobal.uAudit(V.Local.iCount)!DATE_CHECK.Set(V.ODBC.Con!rstPay.FieldValTrim!DATE_CHECK)
+			V.uGlobal.uAudit(V.Local.iCount)!GROSSPAY.Set(V.ODBC.Con!rstPay.FieldValTrim!GROSSPAY)
+		F.Intrinsic.Control.Else
+			V.uGlobal.uAudit(v.Local.iCount)!CHECK_NUM.Set(V.ODBC.Con!rstDed.FieldValTrim!CHECK_NUMBER)
+			V.uGlobal.uAudit(V.Local.iCount)!DATE_CHECK.Set(V.Local.dDefault)
+			V.uGlobal.uAudit(V.Local.iCount)!GROSSPAY.Set(0)
+		F.Intrinsic.Control.EndIf
+	
+		F.Intrinsic.Control.If(V.ODBC.Con!rst401.EOF,=,False)
+			V.uGlobal.uAudit(V.Local.iCount)!COMPANY_AMT.Set(V.ODBC.Con!rst401.FieldValTrim!COMPANY_AMT)
+			V.uGlobal.uAudit(V.Local.iCount)!EMPLOYEE_AMT.Set(V.ODBC.Con!rst401.FieldValTrim!EMPLOYEE_AMT)
+		F.Intrinsic.Control.Else
+			V.uGlobal.uAudit(V.Local.iCount)!COMPANY_AMT.Set(0)
+			V.uGlobal.uAudit(V.Local.iCount)!EMPLOYEE_AMT.Set(0)
+		F.Intrinsic.Control.EndIf
+	
+		F.Intrinsic.Control.If(V.ODBC.Con!rstDed.EOF,=,False)
+			V.uGlobal.uAudit(V.Local.iCount)!INTEREST.Set(V.ODBC.Con!rstDed.FieldValTrim!INTEREST)
+			V.uGlobal.uAudit(V.Local.iCount)!LOAN.Set(V.ODBC.Con!rstDed.FieldValTrim!LOAN)
+			V.uGlobal.uAudit(V.Local.iCount)!PRINC.Set(V.ODBC.Con!rstDed.FieldValTrim!PRINC)
+		F.Intrinsic.Control.Else
+			V.uGlobal.uAudit(V.Local.iCount)!INTEREST.Set(0)
+			V.uGlobal.uAudit(V.Local.iCount)!LOAN.Set(0)
+			V.uGlobal.uAudit(V.Local.iCount)!PRINC.Set(0)
+		F.Intrinsic.Control.EndIf
+	
+		V.uGlobal.uAudit(V.Local.iCount)!EMPLOYEE.Set(V.ODBC.Con!rstEmp.FieldValTrim!EMPLOYEE)
+		V.uGlobal.uAudit(V.Local.iCount)!FULL_NAME.Set(V.ODBC.Con!rstEmp.FieldValTrim!NAME)
+		
+		F.Global.Encryption.Decrypt(V.ODBC.Con!rstEmp.FieldVal!SOC_SEC_ENC,V.Local.sSocialSecurityNumber)
+		V.uGlobal.uAudit(V.Local.iCount)!SSN.Set(V.Local.sSocialSecurityNumber)
+	
+		F.Intrinsic.Math.Add(V.Local.iCount,1,V.Local.iCount)
+		F.ODBC.Con!rst401.Close
+		F.ODBC.Con!rstPay.Close
+		f.ODBC.Con!rstDed.MoveNext
+	f.Intrinsic.Control.Loop
+	F.ODBC.Con!rstDed.Close
+	
+	F.Intrinsic.Math.Add(V.Local.iCount,1,V.Local.iCount)
+	F.ODBC.Con!rstEmp.MoveNext
+
+'	F.ODBC.Con!rstDed.Close
+'	F.ODBC.Con!rst401.Close
+'	F.ODBC.Con!rstPay.Close
+F.Intrinsic.Control.Loop
+
+F.ODBC.Con!rstEmp.Close
+
+'Delete Duplicates
+f.Intrinsic.Variable.UDTMultiFlagDuplicates(v.uGlobal.uAudit!Employee,v.uGlobal.uAudit!Check_Num)
+'Delete flagged
+f.Intrinsic.Variable.UDTDeleteFlagged(v.uGlobal.uAudit)
+
+F.Intrinsic.Control.If(V.uGlobal.uAudit.UBound,<>,-1)
+	F.Intrinsic.Control.For(V.Local.iCount,V.uGlobal.uAudit.LBound,V.uGlobal.uAudit.UBound,1)
+		'cycle through the udt and split the first, last , and middle names appart.
+		'they have the name formatted as Last, First M.
+		F.Intrinsic.String.Split(V.uGlobal.uAudit(V.Local.iCount)!FULL_NAME,", ",V.Local.sName)
+		V.Local.sName.RedimPreserve(0,1)
+		V.uGlobal.uAudit(v.Local.iCount)!LAST_NAME.Set(V.Local.sName(0).Trim)
+		'split the first name at the blank so 0 is first name and 1 is middle innital.
+		F.Intrinsic.String.Split(V.Local.sName(1)," ",V.Local.sName)
+		V.Local.sName.RedimPreserve(0,1)
+		V.uGlobal.uAudit(v.Local.iCount)!FIRST_NAME.Set(V.Local.sName(0).Trim)
+		V.Local.sName.RedimPreserve(0,0)
+		V.Local.sName.Set("")
+	F.Intrinsic.Control.Next(V.Local.iCount)
+
+
+	'save to custom table for report viewing
+	F.Intrinsic.Variable.SetUDTFieldReference(V.uGlobal.uAudit!FIRST_NAME,"FIRST_NAME")
+	F.Intrinsic.Variable.SetUDTFieldReference(V.uGlobal.uAudit!LAST_NAME,"LAST_NAME")
+	F.Intrinsic.Variable.SetUDTFieldReference(V.uGlobal.uAudit!FULL_NAME,"")
+	F.Intrinsic.Variable.SetUDTFieldReference(V.uGlobal.uAudit!CHECK_NUM,"CHECK_NUM")
+	F.Intrinsic.Variable.UDTUnFlagAll(V.uGlobal.uAudit)
+	F.Intrinsic.Variable.UDTMultiFlag(V.uGlobal.uAudit!CHECK_NUM,"")
+	F.Intrinsic.Variable.UDTDeleteFlagged(V.uGlobal.uAudit)
+	F.Intrinsic.Variable.UDTMultiQuickSort(V.uGlobal.uAudit!LAST_NAME,False,V.uGlobal.uAudit!FIRST_NAME,False)
+	F.ODBC.Connection!Con.OpenLocalRecordsetRW("rst","GCG_3723_401K_AUDIT")
+	F.Intrinsic.Variable.SaveUDTToRecordSet("Con","rst","v.uGlobal.uAudit")
+	F.ODBC.Con!rst.Close
+
+F.Intrinsic.Control.EndIf
+
+V.Local.sParamName.Set("Start_Date*!*End_Date")
+F.Intrinsic.String.Build("{0}*!*{1}",V.Screen.SS_Form1!dtpStart.Value,V.Screen.SS_Form1!dtpEnd.Value,V.Local.sParamValue)
+F.Global.BI.StopLogging(V.Local.iLog)
+
+F.Global.BI.RunReportPreProcessor(V.Local.iBIRUNID,V.Local.iLog,V.Local.sParamName,V.Local.sParamValue,"",-1,False,"",-1,"",-1,"","",V.Local.iLog)
+
+
+
+F.Intrinsic.Control.ExitSub
+
+F.Intrinsic.Control.Label("cmdprint_click_Err")
+F.Intrinsic.Control.If(V.Ambient.ErrorNumber,<>,0)
+	Function.Intrinsic.String.Concat("Project: GCG_3723_401K_AUDIT.gas",V.Ambient.Newline,V.Ambient.Newline,"Subroutine: ",V.Ambient.CurrentSubroutine,V.Ambient.NewLine,"Error Occurred ",V.Ambient.ErrorNumber," with description ",V.Ambient.ErrorDescription,V.Local.sError)
+	F.Intrinsic.UI.Msgbox(V.Local.sError)
+	F.Intrinsic.Control.CallSub(Ss_form1_unload)
+Function.Intrinsic.Control.EndIf
+
+
+program.sub.cmdprint_click.end
+
+Program.Sub.Comments.Start
+${$0$}$GCG_3723_401K_AUDIT$}$SS1$}$4/25/2016
+${$3$}$0$}$$}$-1$}$-1$}$$}$1/1/1900$}$401K Audit Report
+Columns: Emp-Num, SSN, First Name, Last Name, Gross Pay, 401k Ded, Co-Match, Pr+Int, Princ, Interest, Check-Date, Ck-Num
+Program.Sub.Comments.End
+
+Program.Sub.ScreenSS.Start
+SS_Form1{{CAPTION::401k Audit Report
+SS_Form1.CTRL{{NAME::dtpStart\\TYPE::6\\CAPTION::Start Date\\TABSTOP::1\\GROUP::1\\BROWSER::0\\SIZE::1
+SS_Form1.CTRL{{NAME::dtpEnd\\TYPE::6\\CAPTION::End Date\\TABSTOP::2\\GROUP::1\\BROWSER::0\\SIZE::1
+SS_Form1.CTRL{{NAME::cmdPrint\\TYPE::5\\CAPTION::Print\\TABSTOP::3\\GROUP::-1\\BROWSER::0\\SIZE::1
+
+Program.Sub.ScreenSS.End
