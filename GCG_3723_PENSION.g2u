@@ -1,0 +1,263 @@
+Program.Sub.ScreenSU.Start
+gui.SS_Form1..create
+gui.SS_Form1..caption("Pension Report")
+gui.SS_Form1..size(4135,1825)
+gui.SS_Form1..minx(0)
+gui.SS_Form1..miny(0)
+gui.SS_Form1..position(0,0)
+gui.SS_Form1..event(unload,ss_form1_unload)
+gui.SS_Form1..alwaysontop(False)
+gui.SS_Form1..fontname("Arial")
+gui.SS_Form1..fontsize(8)
+gui.SS_Form1..forecolor(0)
+gui.SS_Form1..fontstyle(,,,,)
+gui.SS_Form1..BackColor(-2147483633)
+gui.SS_Form1..controlbox(True)
+gui.SS_Form1..maxbutton(False)
+gui.SS_Form1..minbutton(False)
+gui.SS_Form1..mousepointer(0)
+gui.SS_Form1..moveable(True)
+gui.SS_Form1..sizeable(False)
+gui.SS_Form1..ShowInTaskBar(True)
+gui.SS_Form1..titlebar(True)
+gui.SS_Form1.lbl_dtpStart.create(label,"Start Date",True,1800,200,1,100,135,True,0,Arial,8,-2147483633,0)
+gui.SS_Form1.lbl_dtpStart.defaultvalue("")
+gui.SS_Form1.lbl_dtpStart.controlgroup(0)
+gui.SS_Form1.dtpStart.create(datepicker)
+gui.SS_Form1.dtpStart.visible(True)
+gui.SS_Form1.dtpStart.size(1800,345)
+gui.SS_Form1.dtpStart.zorder(0)
+gui.SS_Form1.dtpStart.position(100,335)
+gui.SS_Form1.dtpStart.enabled(True)
+gui.SS_Form1.dtpStart.checkbox(False)
+gui.SS_Form1.dtpStart.defaultvalue("")
+gui.SS_Form1.dtpStart.controlgroup(0)
+gui.SS_Form1.lbl_dtpEnd.create(label,"End Date",True,1800,200,1,1985,135,True,0,Arial,8,-2147483633,0)
+gui.SS_Form1.lbl_dtpEnd.defaultvalue("")
+gui.SS_Form1.lbl_dtpEnd.controlgroup(0)
+gui.SS_Form1.dtpEnd.create(datepicker)
+gui.SS_Form1.dtpEnd.visible(True)
+gui.SS_Form1.dtpEnd.size(1800,345)
+gui.SS_Form1.dtpEnd.zorder(0)
+gui.SS_Form1.dtpEnd.position(1985,335)
+gui.SS_Form1.dtpEnd.enabled(True)
+gui.SS_Form1.dtpEnd.checkbox(False)
+gui.SS_Form1.dtpEnd.defaultvalue("")
+gui.SS_Form1.dtpEnd.controlgroup(0)
+gui.SS_Form1.cmdPrint.create(button)
+gui.SS_Form1.cmdPrint.caption("Print")
+gui.SS_Form1.cmdPrint.visible(True)
+gui.SS_Form1.cmdPrint.size(1000,360)
+gui.SS_Form1.cmdPrint.zorder(0)
+gui.SS_Form1.cmdPrint.position(100,850)
+gui.SS_Form1.cmdPrint.enabled(True)
+gui.SS_Form1.cmdPrint.fontname("Arial")
+gui.SS_Form1.cmdPrint.fontsize(8)
+gui.SS_Form1.cmdPrint.event(click,cmdprint_click)
+gui.SS_Form1.cmdPrint.defaultvalue("")
+gui.SS_Form1.cmdPrint.controlgroup(0)
+gui.SS_Form1.dtpStart.tabstop(true)
+gui.SS_Form1.dtpStart.tabindex(1)
+gui.SS_Form1.dtpEnd.tabstop(true)
+gui.SS_Form1.dtpEnd.tabindex(2)
+gui.SS_Form1.cmdPrint.tabstop(true)
+gui.SS_Form1.cmdPrint.tabindex(3)
+
+
+Program.Sub.ScreenSU.End
+
+Program.Sub.Preflight.Start
+
+Variable.UDT.uPension.Define("SSN",String,SOCIAL_SECURITY_NO)
+Variable.UDT.uPension.Define("EMPLOYEE",String,EMPLOYEE)
+Variable.UDT.uPension.Define("FULL_NAME",String,NAME)
+Variable.UDT.uPension.Define("SEX",String,SEX)
+Variable.UDT.uPension.Define("GROSSPAY",Float,GROSSPAY)
+Variable.UDT.uPension.Define("FIRST_NAME",String,)
+Variable.UDT.uPension.Define("LAST_NAME",String,)
+Variable.UDT.uPension.Define("MIDDLE_NAME",String,)
+Variable.UDT.uPension.Define("BIRTHDATE",Date,BIRTHDATE)
+Variable.UDT.uPension.Define("DATE_HIRE",Date,DATE_HIRE)
+Variable.UDT.uPension.Define("TOTLHRS",Float,TOTLHRS)
+Variable.UDT.uPension.Define("DATE_TERMINATION",Date,DATE_TERMINATION)
+Variable.UDT.uPension.Define("BIRUNID",String,BIRUNID)
+Variable.uGlobal.uPension.Declare("uPension")
+Program.Sub.Preflight.End
+
+Program.Sub.Main.Start
+F.Intrinsic.Control.SetErrorHandler("Main_Err")
+F.Intrinsic.Control.ClearErrors
+
+V.Local.sError.Declare(String)
+
+'SAS
+'4/25/16
+
+F.ODBC.Connection!Con.OpenConnection(V.Ambient.PDSN,V.Ambient.PUser,V.Ambient.PPass)
+
+Gui.SS_Form1..Show
+
+F.Intrinsic.Control.ExitSub
+
+F.Intrinsic.Control.Label("Main_Err")
+F.Intrinsic.Control.If(V.Ambient.ErrorNumber,<>,0)
+	Function.Intrinsic.String.Concat("Project: GCG_3723_PENSION.gas",V.Ambient.Newline,V.Ambient.Newline,"Subroutine: ",V.Ambient.CurrentSubroutine,V.Ambient.NewLine,"Error Occurred ",V.Ambient.ErrorNumber," with description ",V.Ambient.ErrorDescription,V.Local.sError)
+	F.Intrinsic.UI.Msgbox(V.Local.sError)
+	F.Intrinsic.Control.CallSub(Ss_form1_unload)
+Function.Intrinsic.Control.EndIf
+
+
+Program.Sub.Main.End
+
+program.sub.ss_form1_unload.start
+F.Intrinsic.Control.SetErrorHandler("ss_form1_unload_Err")
+F.Intrinsic.Control.ClearErrors
+
+V.Local.sError.Declare(String)
+
+f.ODBC.Connection!Con.Close
+F.Intrinsic.Control.End
+
+F.Intrinsic.Control.ExitSub
+
+F.Intrinsic.Control.Label("ss_form1_unload_Err")
+F.Intrinsic.Control.If(V.Ambient.ErrorNumber,<>,0)
+	Function.Intrinsic.String.Concat("Project: GCG_3723_PENSION.gas",V.Ambient.Newline,V.Ambient.Newline,"Subroutine: ",V.Ambient.CurrentSubroutine,V.Ambient.NewLine,"Error Occurred ",V.Ambient.ErrorNumber," with description ",V.Ambient.ErrorDescription,V.Local.sError)
+	F.Intrinsic.UI.Msgbox(V.Local.sError)
+	F.Intrinsic.Control.End
+Function.Intrinsic.Control.EndIf
+
+
+program.sub.ss_form1_unload.end
+
+program.sub.cmdprint_click.start
+F.Intrinsic.Control.SetErrorHandler("cmdprint_click_Err")
+F.Intrinsic.Control.ClearErrors
+
+V.Local.sError.Declare(String)
+V.Local.sSQL.Declare(String)
+V.Local.iCount.Declare(Long)
+V.Local.sName.Declare(String)
+V.Local.iBIRUNID.Declare(Long)
+V.Local.iLog.Declare(Long)
+V.Local.iReportID.Declare(Long)
+V.Local.sParamName.Declare(String)
+V.Local.sParamValue.Declare(String)
+V.Local.sSocialSecurityNumber.Declare(String)
+V.Local.iIndex.Declare(Long)
+
+V.uGlobal.uPension.Redim(-1,-1)
+
+'check to see if Date range is not backwards
+F.Intrinsic.Control.If(V.Screen.SS_Form1!dtpStart.Value,>,V.Screen.SS_Form1!dtpEnd.Value)
+	'start is after end so stop and notify
+	F.Intrinsic.UI.Msgbox("Start Date is after End Date, please fix your date range.")
+	F.Intrinsic.Control.ExitSub
+F.Intrinsic.Control.EndIf
+
+Gui.SS_Form1..Visible(FALSE)
+
+F.Global.BI.GetRunID(V.Local.iBIRUNID)
+F.Global.BI.GetIDFromName("GCG_3723_PENSION.rpt",V.Local.iReportID)
+F.Global.BI.StartLogging(V.Local.iBIRUNID,V.Local.iReportID,-1,"",V.Local.iLog)
+'start gathering information for the report and set it into the custom table
+'Column: SSN, Id#, Last Name, First Name, mi, Gross Pay, Birth D, Hire D, Term. D, TotalHrs, Sex
+'selecting everything from employee master
+F.Intrinsic.String.Build("SELECT '{0}' AS BIRUNID, VEM.SOC_SEC_ENC, VEM.EMPLOYEE, VEM.NAME, VEM.BIRTHDATE, VEM.DATE_HIRE, VEM.DATE_TERMINATION, VEM.SEX, ISNULL(SUM(VPH.REG_DOLLARS_1) + SUM(VPH.OT_DOLLARS_1) + SUM(VPH.DBL_DOLLARS_1) + SUM(REG_DOLLARS_2) + SUM(OT_DOLLARS_2) + SUM(DBL_DOLLARS_2) + SUM(REG_DOLLARS_3) + SUM(OT_DOLLARS_3) + SUM(DBL_DOLLARS_3),0) AS GROSSPAY, ISNULL(SUM(HOURS_R_1) + SUM(HOURS_O_1) + SUM(HOURS_D_1) + SUM(HOURS_R_2) + SUM(HOURS_O_2) + SUM(HOURS_D_2) + SUM(HOURS_R_3) + SUM(HOURS_O_3) + SUM(HOURS_D_3),0) AS TOTLHRS ",V.Local.iBIRUNID,V.Local.sSQL)
+f.Intrinsic.String.Build("{0} FROM V_EMPLOYEE_MSTR AS VEM LEFT JOIN V_PAY_HIST_EARN AS VPH ON VEM.EMPLOYEE = VPH.EMPLOYEE WHERE DATE_HISTORY BETWEEN '{1}' AND '{2}' GROUP BY VEM.SOC_SEC_ENC, VEM.EMPLOYEE, VEM.NAME, VEM.BIRTHDATE, VEM.DATE_HIRE, VEM.DATE_TERMINATION, VEM.SEX ORDER BY VEM.EMPLOYEE ASC",v.Local.sSQL,v.Screen.SS_Form1!dtpStart.Value.PervasiveDate,v.Screen.SS_Form1!dtpEnd.Value.PervasiveDate,v.Local.sSQL)
+F.ODBC.Connection!Con.OpenLocalRecordsetRW("rstEmp",V.Local.sSQL)
+'F.Intrinsic.Variable.LoadUDTFromRecordset("Con","rstEmp","V.uGlobal.uPension",False,10000)
+
+F.Intrinsic.Control.DoUntil(V.ODBC.Con!rstEmp.EOF,=,True)
+
+	F.Intrinsic.Control.If(V.uGlobal.uPension.UBound,=,-1)
+		F.Intrinsic.Math.Add(V.uGlobal.uPension.UBound,1,V.Local.iIndex)
+		V.uGlobal.uPension.Redim(0,V.Local.iIndex)
+	F.Intrinsic.Control.Else
+		F.Intrinsic.Math.Add(V.uGlobal.uPension.UBound,1,V.Local.iIndex)
+		V.uGlobal.uPension.RedimPreserve(0,V.Local.iIndex)
+	F.Intrinsic.Control.EndIf
+
+	V.uGlobal.uPension(V.Local.iIndex)!BIRUNID.Set(V.ODBC.Con!rstEmp.FieldVal!BIRUNID)
+	V.uGlobal.uPension(V.Local.iIndex)!EMPLOYEE.Set(V.ODBC.Con!rstEmp.FieldVal!EMPLOYEE)
+	V.uGlobal.uPension(V.Local.iIndex)!FULL_NAME.Set(V.ODBC.Con!rstEmp.FieldVal!NAME)
+	V.uGlobal.uPension(V.Local.iIndex)!SEX.Set(V.ODBC.Con!rstEmp.FieldVal!Sex)
+	V.uGlobal.uPension(V.Local.iIndex)!GROSSPAY.Set(V.ODBC.Con!rstEmp.FieldVal!GROSSPAY)
+	V.uGlobal.uPension(V.Local.iIndex)!BIRTHDATE.Set(V.ODBC.Con!rstEmp.FieldVal!BIRTHDATE)
+	V.uGlobal.uPension(V.Local.iIndex)!DATE_HIRE.Set(V.ODBC.Con!rstEmp.FieldVal!DATE_HIRE)
+	V.uGlobal.uPension(V.Local.iIndex)!TOTLHRS.Set(V.ODBC.Con!rstEmp.FieldVal!TOTLHRS)
+	V.uGlobal.uPension(V.Local.iIndex)!DATE_TERMINATION.Set(V.ODBC.Con!rstEmp.FieldVal!DATE_TERMINATION)
+
+	F.Global.Encryption.Decrypt(V.ODBC.Con!rstEmp.FieldVal!SOC_SEC_ENC,V.Local.sSocialSecurityNumber)
+	V.uGlobal.uPension(V.Local.iIndex)!SSN.Set(V.Local.sSocialSecurityNumber)
+	F.ODBC.Con!rstEmp.MoveNext
+F.Intrinsic.Control.Loop
+
+F.ODBC.Con!rstEmp.Close
+
+F.Intrinsic.Control.If(V.uGlobal.uPension.UBound,<>,-1)
+	F.Intrinsic.Control.For(V.Local.iCount,V.uGlobal.uPension.LBound,V.uGlobal.uPension.UBound,1)
+		'cycle through the udt and split the first, last , and middle names appart.
+		'name is formatted Last, First M.
+		F.Intrinsic.String.Split(V.uGlobal.uPension(V.Local.iCount)!FULL_NAME,", ",V.Local.sName)
+		V.Local.sName.RedimPreserve(0,1)
+		V.uGlobal.uPension(v.Local.iCount)!LAST_NAME.Set(V.Local.sName(0).Trim)
+		'split the first and middle
+		F.Intrinsic.String.Split(V.Local.sName(1)," ",V.Local.sName)
+		V.Local.sName.RedimPreserve(0,1)
+		V.uGlobal.uPension(v.Local.iCount)!MIDDLE_NAME.Set(V.Local.sName(1).Left1)
+		V.uGlobal.uPension(v.Local.iCount)!FIRST_NAME.Set(V.Local.sName(0).Trim)
+		V.Local.sName.RedimPreserve(0,0)
+		V.Local.sName.Set("")
+
+	F.Intrinsic.Control.Next(V.Local.iCount)
+
+
+	'save to custom table for report viewing
+	F.Intrinsic.Variable.SetUDTFieldReference(V.uGlobal.uPension!FIRST_NAME,"FIRST_NAME")
+	F.Intrinsic.Variable.SetUDTFieldReference(V.uGlobal.uPension!LAST_NAME,"LAST_NAME")
+	F.Intrinsic.Variable.SetUDTFieldReference(V.uGlobal.uPension!MIDDLE_NAME,"MIDDLE_NAME")
+	F.Intrinsic.Variable.SetUDTFieldReference(V.uGlobal.uPension!FULL_NAME,"")
+	F.ODBC.Connection!Con.OpenLocalRecordsetRW("rst","GCG_3723_PENSION")
+	
+	F.Intrinsic.Variable.SaveUDTToRecordSet("Con","rst","v.uGlobal.uPension")
+	F.ODBC.Con!rst.Close
+
+F.Intrinsic.Control.EndIf
+
+V.Local.sParamName.Set("Start_Date*!*End_Date")
+F.Intrinsic.String.Build("{0}*!*{1}",V.Screen.SS_Form1!dtpStart.Value,V.Screen.SS_Form1!dtpEnd.Value,V.Local.sParamValue)
+F.Global.BI.StopLogging(V.Local.iLog)
+
+F.Global.BI.RunReportPreProcessor(V.Local.iBIRUNID,V.Local.iLog,V.Local.sParamName,V.Local.sParamValue,"",-1,False,"",-1,"",-1,"","",V.Local.iLog)
+
+
+
+
+F.Intrinsic.Control.ExitSub
+
+F.Intrinsic.Control.Label("cmdprint_click_Err")
+F.Intrinsic.Control.If(V.Ambient.ErrorNumber,<>,0)
+	Function.Intrinsic.String.Concat("Project: GCG_3723_PENSION.gas",V.Ambient.Newline,V.Ambient.Newline,"Subroutine: ",V.Ambient.CurrentSubroutine,V.Ambient.NewLine,"Error Occurred ",V.Ambient.ErrorNumber," with description ",V.Ambient.ErrorDescription,V.Local.sError)
+	F.Intrinsic.UI.Msgbox(V.Local.sError)
+	F.Intrinsic.Control.CallSub(Ss_form1_unload)
+Function.Intrinsic.Control.EndIf
+
+
+program.sub.cmdprint_click.end
+
+Program.Sub.Comments.Start
+${$0$}$GCG_3723_PENSION$}$SS1$}$4/25/2016
+${$3$}$0$}$$}$-1$}$-1$}$$}$1/1/1900$}$Quote 7566-0
+
+This is a Pension report
+Column: SSN, Id#, Last Name, First Name, mi, Gross Pay, Birth D, Hire D, Term. D, TotalHrs, Sex
+Program.Sub.Comments.End
+Program.Sub.ScreenSS.Start
+SS_Form1{{CAPTION::Pension Report
+SS_Form1.CTRL{{NAME::dtpStart\\TYPE::6\\CAPTION::Start Date\\TABSTOP::1\\GROUP::1\\BROWSER::0\\SIZE::1
+SS_Form1.CTRL{{NAME::dtpEnd\\TYPE::6\\CAPTION::End Date\\TABSTOP::2\\GROUP::1\\BROWSER::0\\SIZE::1
+SS_Form1.CTRL{{NAME::cmdPrint\\TYPE::5\\CAPTION::Print\\TABSTOP::3\\GROUP::-1\\BROWSER::0\\SIZE::1
+
+Program.Sub.ScreenSS.End
+
